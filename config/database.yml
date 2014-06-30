@@ -1,0 +1,18 @@
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: test-postgres_test
+  pool: 5
+
+# production:
+#   adapter: postgresql
+#   encoding: unicode
+#   database: test-postgres_production
+#   pool: 5
+
+development:
+  adapter: postgresql
+  database: test-postgres
+  host: localhost
+  pool: 5
+  timeout: 5000
