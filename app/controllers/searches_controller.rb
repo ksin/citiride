@@ -1,6 +1,5 @@
 class SearchesController < ApplicationController
 
-
   def show
     start_point_coords = find_coords(params[:s])
     destination_coords = find_coords(params[:d])
