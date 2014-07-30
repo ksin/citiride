@@ -7,11 +7,3 @@
 	var destinationStation = <%= @destination_station_data.to_json.html_safe %>
 	renderMap(finalPoints, addresses, startStation, destinationStation);	
 </script>
-
-
-
-<div class="authenticate">
-<%= link_to "Log in to save your ride?", login_path, id: "login", remote: true %>
-<%= link_to "...or sign up here.", signup_path, id: "signup", remote: true %>
-</div>
-

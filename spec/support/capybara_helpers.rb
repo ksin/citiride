@@ -6,5 +6,4 @@ module CapybaraHelpers
   end
 end
 
-
 class AjaxStillWorking < Capybara::ElementNotFound;end
