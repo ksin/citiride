@@ -1,27 +1,5 @@
 module ApplicationHelper
 
-  # def google_walking_directions(args)
-  #   options = {
-  #     languange: :en,
-  #     alternative: :true,
-  #     sensor: :false,
-  #     mode: :walking
-  #   }
-  #   GoogleDirections.new(args[:start],args[:destination],options)
-  # end
-
-  # def google_biking_directions(args)
-  #   options = {
-  #     languange: :en,
-  #     alternative: :true,
-  #     sensor: :false,
-  #     mode: :biking
-  #   }
-  #   GoogleDirections.new(args[:start],args[:destination],options)
-  # end
-
-  # args = {start_point: "7 carmine street, New York, NY", looking_for: "availableBikes" or "availableDocks"}
-
   def find_coords(address)
     location = Geocoder.search(address)
     [location[0].latitude, location[0].longitude]

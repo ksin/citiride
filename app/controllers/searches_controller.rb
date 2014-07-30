@@ -16,12 +16,4 @@ class SearchesController < ApplicationController
     @destination_station_data = destination_station
   end
 
-  def login
-    render :partial => 'login'
-  end
-
-  def signup
-    render :partial => 'signup'
-  end
-
 end
