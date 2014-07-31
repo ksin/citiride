@@ -35,7 +35,7 @@ function displayFirstWalkRoute(start, start_station, startAddress) {
       directionsDisplay.setOptions({ preserveViewport: true });
       directionsDisplay.setDirections(response);
       directionsDisplay.setOptions( {suppressMarkers: true});
-      showStepsRoute1Walk(response, startAddress);
+      showFirstWalkMarkers(response, startAddress);
     }
   });
 }
@@ -60,12 +60,12 @@ function displayBikeRoute(start_station, next_station, startStationJson, destina
       directionsDisplay.setOptions({ preserveViewport: true });
       directionsDisplay.setDirections(response);
       directionsDisplay.setOptions( {suppressMarkers: true});
-      showStepsRouteBike(response, startStationJson, destinationStationJson);
+      showBikeMarkers(response, startStationJson, destinationStationJson);
     }
   });
 }
 
-function showStepsRouteBike(directionResult, startStation, destinationStation) {
+function showBikeMarkers(directionResult, startStation, destinationStation) {
 
   var stationInfoWindow = new google.maps.InfoWindow({});
   
@@ -94,15 +94,15 @@ function showStepsRouteBike(directionResult, startStation, destinationStation) {
       contentString = '<div class="station-window" style="width: 20%, margin: 0">' +
                         // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
                         '<h2 class="temp-padding" style="margin: 0">' + startStation.stationName + '</h2>' +
-                          // if the station is planned, put up a small message saying it is planned, if not, put the table up
-                          (startStation.statusValue == 'Planned' ? "<i>(planned station)</i>" :
+                        // if the station is planned, put up a small message saying it is planned, if not, put the table up
+                        (startStation.statusValue == 'Planned' ? "<i>(planned station)</i>" :
 
-                              '<div class="station-data">' +
-                                '<b>Available Bikes: </b>' + startStation.availableBikes + '<br>' +
-                                '<b>Available Docks: </b>' + startStation.availableDocks + '<br>' +
-                              '</div>'
-                              ) +
-                          '</div>';
+                          '<div class="station-data">' +
+                            '<b>Available Bikes: </b>' + startStation.availableBikes + '<br>' +
+                            '<b>Available Docks: </b>' + startStation.availableDocks + '<br>' +
+                          '</div>'
+                        ) +
+                      '</div>';
 
       // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
       var div = document.createElement('div');
@@ -133,18 +133,18 @@ var marker2 = new google.maps.Marker({
 });
 
 google.maps.event.addListener(marker2, 'click', function() {
-  contentString='<div class="station-window">' +
+  contentString = '<div class="station-window">' +
                   // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-                  '<h2 class="temp-padding" style="margin: 0">' + destinationStation.stationName + '</h2>' +
-                    // if the station is planned, put up a small message saying it is planned, if not, put the table up
+                    '<h2 class="temp-padding" style="margin: 0">' + destinationStation.stationName + '</h2>' +
+                  // if the station is planned, put up a small message saying it is planned, if not, put the table up
                     (destinationStation.statusValue == 'Planned' ? "<i>(planned station)</i>" :
-                        //if we have don't have sponsorship info:....
-                        '<div class="station-data">' +
-                          '<b>Available Bikes: </b>' + destinationStation.availableBikes + '<br>' +
-                          '<b>Available Docks: </b>' + destinationStation.availableDocks + '<br>' +
-                        '</div>'
-                        ) +
-                    '</div>';
+                      //if we have don't have sponsorship info:....
+                      '<div class="station-data">' +
+                        '<b>Available Bikes: </b>' + destinationStation.availableBikes + '<br>' +
+                        '<b>Available Docks: </b>' + destinationStation.availableDocks + '<br>' +
+                      '</div>'
+                    ) +
+                  '</div>';
 
   // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
   var div = document.createElement('div');
@@ -159,11 +159,10 @@ google.maps.event.addListener(marker2, 'click', function() {
   });
 }
 
-function showStepsRoute1Walk(directionResult, startAddress) {
+function showFirstWalkMarkers(directionResult, startAddress) {
 
-  var stationInfoWindow = new google.maps.InfoWindow({
+  var stationInfoWindow = new google.maps.InfoWindow({});
 
-  }); 
   var myRoute = directionResult.routes[0].legs[0];
 
   for (var i = 0; i < myRoute.steps.length; i++) {
@@ -211,9 +210,10 @@ function showStepsRoute1Walk(directionResult, startAddress) {
 
 }
 
-function showStepsRoute2Walk(directionResult, destination) {
+function showSecondWalkMarkers(directionResult, destination) {
 
   var stationInfoWindow = new google.maps.InfoWindow({});
+
   var myRoute = directionResult.routes[0].legs[0];
 
   for (var i = 0; i < myRoute.steps.length; i++) {
@@ -277,7 +277,7 @@ function displaySecondWalkRoute(next_station, destination, destinationAddress) {
       directionsDisplay.setOptions({ preserveViewport: true });
       directionsDisplay.setDirections(response);
       directionsDisplay.setOptions( {suppressMarkers: true});
-      showStepsRoute2Walk(response, destinationAddress);
+      showSecondWalkMarkers(response, destinationAddress);
     }
   });
 }
