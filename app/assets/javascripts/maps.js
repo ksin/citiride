@@ -15,11 +15,11 @@ function initialize(coords, addresses, startStation, destinationStation) {
   displaySecondWalkRoute(coords[2], coords[3], addresses[1]);
 }
 
-function displayFirstWalkRoute(start, start_station, startAddress) {
+function displayFirstWalkRoute(start, startStation, startAddress) {
   var directionsService = new google.maps.DirectionsService();
 
   var startingLatLng = new google.maps.LatLng(start[0],start[1]);
-  var firstStationLatLng = new google.maps.LatLng(start_station[0],start_station[1]);
+  var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
 
   var directionsDisplay = new google.maps.DirectionsRenderer();
 
@@ -40,11 +40,11 @@ function displayFirstWalkRoute(start, start_station, startAddress) {
   });
 }
 
-function displayBikeRoute(start_station, next_station, startStationJson, destinationStationJson) {
+function displayBikeRoute(startStation, nextStation, startStationJson, destinationStationJson) {
   var directionsService = new google.maps.DirectionsService();
 
-  var firstStationLatLng = new google.maps.LatLng(start_station[0],start_station[1]);
-  var secondStationLatLng = new google.maps.LatLng(next_station[0],next_station[1]);
+  var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
+  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
 
   var directionsDisplay = new google.maps.DirectionsRenderer();
 
@@ -255,10 +255,10 @@ function showSecondWalkMarkers(directionResult, destination) {
 
 }
 
-function displaySecondWalkRoute(next_station, destination, destinationAddress) {
+function displaySecondWalkRoute(nextStation, destination, destinationAddress) {
   var directionsService = new google.maps.DirectionsService();
 
-  var secondStationLatLng = new google.maps.LatLng(next_station[0],next_station[1]);
+  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
   var destinationLatLng = new google.maps.LatLng(destination[0],destination[1]);
 
   var directionsDisplay = new google.maps.DirectionsRenderer();

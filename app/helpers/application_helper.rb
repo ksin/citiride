@@ -39,7 +39,7 @@ module ApplicationHelper
     station[0]
   end
 
-  # retrieves list of stations from CitiBike with realtime data
+  # Retrieves list of stations from CitiBike with realtime data
   def get_station_list
     uri = URI.parse("http://www.citibikenyc.com/stations/json")
     res = Net::HTTP.get_response(uri)
