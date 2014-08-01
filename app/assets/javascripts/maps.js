@@ -263,7 +263,6 @@ function displaySecondWalkRoute(nextStation, destination, destinationAddress) {
 
   var directionsDisplay = new google.maps.DirectionsRenderer();
 
-
   directionsDisplay.setMap(map);
 
   var request = {
@@ -306,7 +305,32 @@ function sprite_offset(bikes,docks) {
   return offset;
 }
 
+// function renderMap(coords, addresses, startStation, destinationStation) {
+//   google.maps.event.addDomListener(window, 'load', initialize(coords, addresses, startStation, destinationStation));
+// }
 
-function renderMap(coords, addresses, startStation, destinationStation) {
-  google.maps.event.addDomListener(window, 'load', initialize(coords, addresses, startStation, destinationStation));
-}
+$(document).ready(function() {
+
+  $('form').on('submit', function(e) {
+    e.preventDefault();
+
+    var starting = $("input[id='s']").val();
+    var destination = $("input[id='d']").val();
+
+    $('.index').remove();
+    $('body').append("<div id='map'></div>");
+
+    var ajaxRequest = $.ajax({
+      url: '/search/map',
+      type: 'GET',
+      data: {s: starting, d: destination}
+    });
+
+    ajaxRequest.done(function(response) {
+      var mapData = response;
+      initialize(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
+    });
+
+  });
+
+});

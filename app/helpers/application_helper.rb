@@ -1,5 +1,22 @@
 module ApplicationHelper
 
+  def create_map_data(start, destination)
+    start_coords = find_coords(start)
+    destination_coords = find_coords(destination)
+
+    addresses = [start, destination]
+    start_station_data = find_closest(coords: start_coords, looking_for: "availableBikes")
+    destination_station_data = find_closest(coords: destination_coords, looking_for: "availableDocks")
+    map_points = map_points(start_coords, destination_coords, start_station_data, destination_station_data)
+
+    { 
+      addresses: addresses, 
+      startStation: start_station_data, 
+      destinationStation: destination_station_data, 
+      mapPoints: map_points
+    }
+  end
+
   def map_points(start_coords, destination_coords, start_station, destination_station)
     [ start_coords, 
       [start_station["latitude"], start_station["longitude"]], 

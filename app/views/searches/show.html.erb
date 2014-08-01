@@ -1,9 +1,0 @@
-<div id="map"></div>
-<script type="text/javascript">
-	var mapPoints = <%= @map_points %>;
-	var addresses = <%= @addresses.to_json.html_safe %>
-	var startStation = <%= @start_station_data.to_json.html_safe %>
-	var destinationStation = <%= @destination_station_data.to_json.html_safe %>
-
-	renderMap(mapPoints, addresses, startStation, destinationStation);	
-</script>
