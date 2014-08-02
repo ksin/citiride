@@ -15,21 +15,23 @@ function initialize(coords, addresses, startStation, destinationStation) {
   displaySecondWalkRoute(coords[2], coords[3], addresses[1]);
 }
 
-function displayFirstWalkRoute(start, startStation, startAddress) {
-  var directionsService = new google.maps.DirectionsService();
+//// DISPLAY ROUTES ////
 
+function displayFirstWalkRoute(start, startStation, startAddress) {
   var startingLatLng = new google.maps.LatLng(start[0],start[1]);
   var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
-
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-
-  directionsDisplay.setMap(map);
 
   var request = {
     origin : startingLatLng,
     destination : firstStationLatLng,
     travelMode : google.maps.TravelMode.WALKING
   };
+
+  var directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(map);
+
+  var directionsService = new google.maps.DirectionsService();
+
   directionsService.route(request, function(response, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       directionsDisplay.setOptions({ preserveViewport: true });
@@ -41,20 +43,20 @@ function displayFirstWalkRoute(start, startStation, startAddress) {
 }
 
 function displayBikeRoute(startStation, nextStation, startStationJson, destinationStationJson) {
-  var directionsService = new google.maps.DirectionsService();
-
   var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
   var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
-
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-
-  directionsDisplay.setMap(map);
 
   var request = {
     origin : firstStationLatLng,
     destination : secondStationLatLng,
     travelMode : google.maps.TravelMode.BICYCLING
   };
+
+  var directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(map);
+
+  var directionsService = new google.maps.DirectionsService();
+
   directionsService.route(request, function(response, status) {
     if (status == google.maps.DirectionsStatus.OK) {
       directionsDisplay.setOptions({ preserveViewport: true });
@@ -64,6 +66,33 @@ function displayBikeRoute(startStation, nextStation, startStationJson, destinati
     }
   });
 }
+
+function displaySecondWalkRoute(nextStation, destination, destinationAddress) {
+  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
+  var destinationLatLng = new google.maps.LatLng(destination[0],destination[1]);
+
+  var request = {
+    origin : secondStationLatLng,
+    destination : destinationLatLng,
+    travelMode : google.maps.TravelMode.WALKING
+  };
+
+  var directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(map);
+
+  var directionsService = new google.maps.DirectionsService();
+
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setOptions({ preserveViewport: true });
+      directionsDisplay.setDirections(response);
+      directionsDisplay.setOptions( {suppressMarkers: true});
+      showSecondWalkMarkers(response, destinationAddress);
+    }
+  });
+}
+
+//// SHOW MARKERS ////
 
 function showBikeMarkers(directionResult, startStation, destinationStation) {
 
@@ -117,6 +146,7 @@ function showBikeMarkers(directionResult, startStation, destinationStation) {
     });
   }
 }
+
 // Icon as end position
 
 var icon2 = new google.maps.MarkerImage(
@@ -255,32 +285,6 @@ function showSecondWalkMarkers(directionResult, destination) {
 
 }
 
-function displaySecondWalkRoute(nextStation, destination, destinationAddress) {
-  var directionsService = new google.maps.DirectionsService();
-
-  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
-  var destinationLatLng = new google.maps.LatLng(destination[0],destination[1]);
-
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-
-  directionsDisplay.setMap(map);
-
-  var request = {
-    origin : secondStationLatLng,
-    destination : destinationLatLng,
-    travelMode : google.maps.TravelMode.WALKING
-  };
-
-  directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setOptions({ preserveViewport: true });
-      directionsDisplay.setDirections(response);
-      directionsDisplay.setOptions( {suppressMarkers: true});
-      showSecondWalkMarkers(response, destinationAddress);
-    }
-  });
-}
-
 function sprite_offset(bikes,docks) {
   var index_offset;
 
@@ -305,10 +309,6 @@ function sprite_offset(bikes,docks) {
   return offset;
 }
 
-// function renderMap(coords, addresses, startStation, destinationStation) {
-//   google.maps.event.addDomListener(window, 'load', initialize(coords, addresses, startStation, destinationStation));
-// }
-
 $(document).ready(function() {
 
   $('form').on('submit', function(e) {
@@ -318,7 +318,6 @@ $(document).ready(function() {
     var destination = $("input[id='d']").val();
 
     $('.index').remove();
-    $('body').append("<div id='map'></div>");
 
     var ajaxRequest = $.ajax({
       url: '/search/map',
