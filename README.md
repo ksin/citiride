@@ -1,9 +1,15 @@
-CitiRide
+citiride
 ========
 
 *Find the best route to pick up your CitiBike and get to your destination.*
 
 This app combines constantly-updated CitiBike station map information with Google Directions to map an entire ride with the best walking route and the best biking route for you.
+
+### Purpose
+
+Mobile first. We aim to make this useful to anyone in the city who doesn't want to download some apps onto their phone just to get from one place to another. They should be able to easily this kind of information with their phone's built-in browser. 
+
+If at least one person found this app useful and not as annoying as downloading some apps onto their phone to ride a CitiBike, then citiride has achieved its purpose.
 
 ###How it works
 
@@ -28,16 +34,20 @@ The main API used in this app is Google Directions. We wrap the API with the [go
 CitiBike has real time biking and docking information in JSON format.  
 
 Before sending a request to Google Directions, we find the closest city bike station to our starting point with at least two available bikes. We also find the closest city bike station to our destination with at least two available docks. This is calculated with the [geodistance](https://github.com/kristianmandrup/geo-distance) gem, using longitude and latitude points acquired from the CitiBike JSON object.
-=======
 
-### Other project details
+### Contributors
 
-Heroku link: http://citiride.herokuapp.com/
+Started by: Raghav Malik, Dinesh Rai, Mario Marroquin, Ken Sin
 
-Trello: https://trello.com/b/uSddpuoV/citiride
+Current maintainer: Ken Sin
 
-Contributors:
-1. Raghav
-2. Ken
-3. Dinesh
-4. Mario
+### How to contribute
+
+1. Raise an issue.
+2. Fork the repository.
+3. Clone the forked repository into your local environment.
+4. Create a separate branch for the feature you want to add/fix.
+5. When you are done working on the feature, push the changes to that branch and make a pull request.
+
+Trello board of tasks that need to be done:
+https://trello.com/b/76XY3rLi/citiride
