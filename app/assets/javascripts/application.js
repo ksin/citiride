@@ -12,7 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-readyselector
 //= require underscore
-//= require gmaps/google
 
 //= require_tree .
