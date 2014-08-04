@@ -1,21 +1,16 @@
 <div class="index">
-  <div class="container home">
-    <h1 class="logo">CitiRide</h1>
+  <div class="container">
+    <img class="logo" src="/images/bike-icon.png"/>
+    <div class="search">
+      <%= form_tag do %>
 
-    <%= form_tag do %>
+        <%= text_field_tag 's', nil, placeholder: "Starting point" %>
 
-      <%= label_tag(:s, "Starting point") %>
-      <%= text_field_tag(:s) %>
+        <%= text_field_tag 'd', nil, placeholder: "Destination" %>
 
-      <%= label_tag(:d, "Destination") %>
-      <%= text_field_tag(:d) %>
+        <%= submit_tag "Ride!" %>
 
-      <%= submit_tag "Ride!" %>
-
-    <% end %>
+      <% end %>
+    </div>
   </div>
-  <footer>
-    Find the best route to pick up your CitiBike and get to your destination.
-  </footer>
 </div>
-<div id="map"></div>
