@@ -1,5 +1,4 @@
 module ApplicationHelper
-
   def create_map_data(start, destination)
     start_coords = find_coords(start)
     destination_coords = find_coords(destination)
