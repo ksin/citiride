@@ -33,7 +33,7 @@ var BikeMap = {
     // the starting point and the destination point
     var centerLatLng = new google.maps.LatLng((coords[0][0]+coords[3][0])/2,(coords[0][1]+coords[3][1])/2);
     var mapOptions = {
-      zoom: 14,
+      zoom: this.calculateZoom(coords[0][1], coords[3][1]),
       center: centerLatLng
     };
 
@@ -60,6 +60,19 @@ var BikeMap = {
                         address: [addresses[1]],
                         showMarker: this.showMarker.bind(this),
                         markerType: 'end' });
+
+  },
+
+  calculateZoom: function(longitude1, longitude2) {
+    var distance = longitude1 - longitude2;
+
+    if (Math.abs(distance) >= 0.03) {
+      return 14;
+    } else if (Math.abs(distance) >= 0.02) {
+      return 15;
+    } else {
+      return 16;
+    }
 
   },
 
@@ -123,31 +136,21 @@ var BikeMap = {
 
     // defines the icon and position for the four key points of the map
     if (point == 'A') {
-      icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=A|FFFFFF|000000';
+      icon = '/images/letter_a.png';
       position = myRoute.steps[0].start_point;
     }
 
     else if (point == 'B') {
-      icon = new google.maps.MarkerImage(
-                '/images/map-icons.png',
-                new google.maps.Size(42, 53),
-                new google.maps.Point(0, 0),
-                new google.maps.Point(22, 53)
-              );
+      icon = '/images/stationicon.png';
       position = myRoute.steps[0].start_point;
 
     } else if (point == 'C') {
-      icon = new google.maps.MarkerImage(
-                '/images/map-icons.png',
-                new google.maps.Size(42, 53),
-                new google.maps.Point(0, 0),
-                new google.maps.Point(22, 53)
-              );
+      icon = '/images/stationicon.png';
       i = myRoute.steps.length-1;
       position = myRoute.steps[i].end_point;
 
     } else if (point == 'D') {
-      icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=B|FFFFFF|000000';
+      icon = '/images/letter_b.png';
       i = myRoute.steps.length-1;
       position = myRoute.steps[i].end_point;
     }
@@ -166,7 +169,7 @@ var BikeMap = {
     google.maps.event.addListener(marker, 'click', function() {
 
       var contentString;
-      var stationInfoWindow = new google.maps.InfoWindow({});
+      var stationInfoWindow = new google.maps.InfoWindow({maxWidth: 1000});
       var div = document.createElement('div');
 
       if (markerType == 'bike') {
@@ -186,19 +189,16 @@ var BikeMap = {
   },
 
   generateAddressContent: function(address) {
-    return  '<div class="station-window"  style="width: 20%, margin: 0">' +
-              // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-              '<h2 class="temp-padding" style="padding-right: 1.5em">' + address + '</h2>' +
+    return  '<div class="station-window">' +
+              '<h2>' + address + '</h2>' +
             '</div>';
   },
 
   generateStationContent: function(station) {
     return  '<div class="station-window">' +
-              // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-              '<h2 class="temp-padding" style="margin: 0">' + station.stationName + '</h2>' +
+              '<h2>' + station.stationName + '</h2>' +
               // if the station is planned, put up a small message saying it is planned, if not, put the table up
               (station.statusValue == 'Planned' ? "<i>(planned station)</i>" :
-                //if we have don't have sponsorship info:....
                 '<div class="station-data">' +
                   '<b>Available Bikes: </b>' + station.availableBikes + '<br>' +
                   '<b>Available Docks: </b>' + station.availableDocks + '<br>' +
