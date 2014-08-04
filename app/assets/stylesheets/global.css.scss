@@ -1,0 +1,13 @@
+@import 'styles.css.scss';
+
+body {
+  margin: 0;
+  background-color: $body-color;
+  height: 40em;
+}
+
+* {
+  font-family: 'Droid Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+}
