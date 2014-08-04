@@ -1,335 +1,213 @@
-function initialize(coords, addresses, startStation, destinationStation) {
-  // renders map with center latitude and longitude being the average of 
-  // the starting point and the destination point
-  var centerLatLng = new google.maps.LatLng((coords[0][0]+coords[3][0])/2,(coords[0][1]+coords[3][1])/2);
-  var mapOptions = {
-    zoom: 14,
-    center: centerLatLng
-  };
+var BikeMap = {
 
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  init: function() {
 
-  // displays routes
-  displayFirstWalkRoute(coords[0], coords[1], addresses[0]);
-  displayBikeRoute(coords[1], coords[2], startStation, destinationStation);
-  displaySecondWalkRoute(coords[2], coords[3], addresses[1]);
-}
+    // binds map rendering to form submit
+    $('form').on('submit', function(e) {
 
-//// DISPLAY ROUTES ////
+      e.preventDefault();
 
-function displayFirstWalkRoute(start, startStation, startAddress) {
-  var startingLatLng = new google.maps.LatLng(start[0],start[1]);
-  var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
+      var starting = $("input[id='s']").val();
+      var destination = $("input[id='d']").val();
 
-  var request = {
-    origin : startingLatLng,
-    destination : firstStationLatLng,
-    travelMode : google.maps.TravelMode.WALKING
-  };
+      $('.index').remove();
 
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-  directionsDisplay.setMap(map);
-
-  var directionsService = new google.maps.DirectionsService();
-
-  directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setOptions({ preserveViewport: true });
-      directionsDisplay.setDirections(response);
-      directionsDisplay.setOptions( {suppressMarkers: true});
-      showFirstWalkMarkers(response, startAddress);
-    }
-  });
-}
-
-function displayBikeRoute(startStation, nextStation, startStationJson, destinationStationJson) {
-  var firstStationLatLng = new google.maps.LatLng(startStation[0],startStation[1]);
-  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
-
-  var request = {
-    origin : firstStationLatLng,
-    destination : secondStationLatLng,
-    travelMode : google.maps.TravelMode.BICYCLING
-  };
-
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-  directionsDisplay.setMap(map);
-
-  var directionsService = new google.maps.DirectionsService();
-
-  directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setOptions({ preserveViewport: true });
-      directionsDisplay.setDirections(response);
-      directionsDisplay.setOptions( {suppressMarkers: true});
-      showBikeMarkers(response, startStationJson, destinationStationJson);
-    }
-  });
-}
-
-function displaySecondWalkRoute(nextStation, destination, destinationAddress) {
-  var secondStationLatLng = new google.maps.LatLng(nextStation[0],nextStation[1]);
-  var destinationLatLng = new google.maps.LatLng(destination[0],destination[1]);
-
-  var request = {
-    origin : secondStationLatLng,
-    destination : destinationLatLng,
-    travelMode : google.maps.TravelMode.WALKING
-  };
-
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-  directionsDisplay.setMap(map);
-
-  var directionsService = new google.maps.DirectionsService();
-
-  directionsService.route(request, function(response, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setOptions({ preserveViewport: true });
-      directionsDisplay.setDirections(response);
-      directionsDisplay.setOptions( {suppressMarkers: true});
-      showSecondWalkMarkers(response, destinationAddress);
-    }
-  });
-}
-
-//// SHOW MARKERS ////
-
-function showBikeMarkers(directionResult, startStation, destinationStation) {
-
-  var stationInfoWindow = new google.maps.InfoWindow({});
-  
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-
-    var icon1 = new google.maps.MarkerImage(
-      '/images/map-icons.png',
-      new google.maps.Size(42, 53),
-      new google.maps.Point(0, sprite_offset(startStation.availableBikes, startStation.availableDocks)),
-      new google.maps.Point(22, 53)
-    );
-
-    if (i === 0) {
-      // Icon as start position
-      // icon = "https://chart.googleapis.com/chart?chst=d_map_xpin_icon&chld=pin_star|car-dealer|00FFFF|FF0000";
-      var marker = new google.maps.Marker({
-        position: myRoute.steps[i].start_point,
-        map: map,
-        icon: icon1
+      var ajaxRequest = $.ajax({
+        url: '/search/map',
+        type: 'GET',
+        data: {s: starting, d: destination}
       });
 
-    // Create an Event Listener that pops up the infoWindow when a user clicks a station
-    google.maps.event.addListener(marker, 'click', function() {
-      contentString = '<div class="station-window" style="width: 20%, margin: 0">' +
-                        // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-                        '<h2 class="temp-padding" style="margin: 0">' + startStation.stationName + '</h2>' +
-                        // if the station is planned, put up a small message saying it is planned, if not, put the table up
-                        (startStation.statusValue == 'Planned' ? "<i>(planned station)</i>" :
+      ajaxRequest.done(function(mapData) {
+        this.render(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
+      }.bind(this));
 
-                          '<div class="station-data">' +
-                            '<b>Available Bikes: </b>' + startStation.availableBikes + '<br>' +
-                            '<b>Available Docks: </b>' + startStation.availableDocks + '<br>' +
-                          '</div>'
-                        ) +
-                      '</div>';
+    }.bind(this));
+
+  },
+
+  render: function(coords, addresses, startStation, destinationStation) {
+
+    // renders map with center latitude and longitude being the average of 
+    // the starting point and the destination point
+    var centerLatLng = new google.maps.LatLng((coords[0][0]+coords[3][0])/2,(coords[0][1]+coords[3][1])/2);
+    var mapOptions = {
+      zoom: 14,
+      center: centerLatLng
+    };
+
+    this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    // render walking route from starting point to first station
+    this.displayRoute({ start: coords[0],
+                        end: coords[1],
+                        travelMode: google.maps.TravelMode.WALKING,
+                        address: [addresses[0]],
+                        showMarker: this.showMarker.bind(this),
+                        markerType: 'start' });
+    // render bike route from station to station
+    this.displayRoute({ start: coords[1],
+                        end: coords[2],
+                        travelMode: google.maps.TravelMode.BICYCLING,
+                        address: [startStation, destinationStation],
+                        showMarker: this.showMarker.bind(this),
+                        markerType: 'bike' });
+    // render walking route from second station to destination
+    this.displayRoute({ start: coords[2],
+                        end: coords[3],
+                        travelMode: google.maps.TravelMode.WALKING,
+                        address: [addresses[1]],
+                        showMarker: this.showMarker.bind(this),
+                        markerType: 'end' });
+
+  },
+
+  displayRoute: function(args) {
+
+    var startLatLng = new google.maps.LatLng(args.start[0], args.start[1]);
+    var endLatLng = new google.maps.LatLng(args.end[0], args.end[1]);
+    var request = {
+      origin: startLatLng,
+      destination: endLatLng,
+      travelMode: args.travelMode
+    };
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+
+    directionsDisplay.setMap(this.map);
+
+    directionsService.route(request, function(response, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+        directionsDisplay.setOptions({ preserveViewport: true });
+        directionsDisplay.setDirections(response);
+        directionsDisplay.setOptions( {suppressMarkers: true});
+        args.showMarker(response, args.address, args.markerType);
+      }
+    });
+
+  },
+
+  showMarker: function(directionResult, address, markerType) {
+
+    var marker, marker2;
+    var myRoute = directionResult.routes[0].legs[0];
+
+    // show walk marker if one address is passed
+    if (address.length == 1) {
+
+      if (markerType == 'start') {
+        marker = this.makeMarker(myRoute, 'A');
+
+      } else if (markerType == 'end') {
+        marker = this.makeMarker(myRoute, 'D');
+      }
+
+      this.addMarkerListener(marker, address, markerType);
+
+    // show station markers if two addresses are passed
+    } else {
+
+      marker = this.makeMarker(myRoute, 'B');
+      marker2 = this.makeMarker(myRoute, 'C');
+
+      this.addMarkerListener(marker, address[0], markerType);
+      this.addMarkerListener(marker2, address[1], markerType);
+
+    }
+
+  },
+
+  makeMarker: function(myRoute, point) {
+    var icon, position, marker, i;
+
+    // defines the icon and position for the four key points of the map
+    if (point == 'A') {
+      icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=A|FFFFFF|000000';
+      position = myRoute.steps[0].start_point;
+    }
+
+    else if (point == 'B') {
+      icon = new google.maps.MarkerImage(
+                '/images/map-icons.png',
+                new google.maps.Size(42, 53),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(22, 53)
+              );
+      position = myRoute.steps[0].start_point;
+
+    } else if (point == 'C') {
+      icon = new google.maps.MarkerImage(
+                '/images/map-icons.png',
+                new google.maps.Size(42, 53),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(22, 53)
+              );
+      i = myRoute.steps.length-1;
+      position = myRoute.steps[i].end_point;
+
+    } else if (point == 'D') {
+      icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=B|FFFFFF|000000';
+      i = myRoute.steps.length-1;
+      position = myRoute.steps[i].end_point;
+    }
+
+    marker = new google.maps.Marker({
+      position: position,
+      map: this.map,
+      icon: icon
+    });
+
+    return marker;
+  },
+
+  addMarkerListener: function(marker, addressOrStation, markerType) {
+
+    google.maps.event.addListener(marker, 'click', function() {
+
+      var contentString;
+      var stationInfoWindow = new google.maps.InfoWindow({});
+      var div = document.createElement('div');
+
+      if (markerType == 'bike') {
+        contentString = this.generateStationContent(addressOrStation);
+      } else {
+        contentString = this.generateAddressContent(addressOrStation);
+      }
 
       // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
-      var div = document.createElement('div');
       div.innerHTML = contentString;
-
       // Set the content in the infowindow
       stationInfoWindow.setContent(div);
+      stationInfoWindow.open(this.map, marker);
 
-      // Open the InfoWindow
-      stationInfoWindow.open(map, marker);
+    }.bind(this));
 
-    });
-  }
-}
+  },
 
-// Icon as end position
+  generateAddressContent: function(address) {
+    return  '<div class="station-window"  style="width: 20%, margin: 0">' +
+              // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
+              '<h2 class="temp-padding" style="padding-right: 1.5em">' + address + '</h2>' +
+            '</div>';
+  },
 
-var icon2 = new google.maps.MarkerImage(
-      '/images/map-icons.png',
-      new google.maps.Size(42,53),
-      new google.maps.Point(0,sprite_offset(destinationStation.availableBikes,destinationStation.availableDocks)),
-      new google.maps.Point(22,53)
-      );
-
-var marker2 = new google.maps.Marker({
-  position: myRoute.steps[i - 1].end_point,
-  map: map,
-  icon: icon2
-});
-
-google.maps.event.addListener(marker2, 'click', function() {
-  contentString = '<div class="station-window">' +
-                  // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-                    '<h2 class="temp-padding" style="margin: 0">' + destinationStation.stationName + '</h2>' +
-                  // if the station is planned, put up a small message saying it is planned, if not, put the table up
-                    (destinationStation.statusValue == 'Planned' ? "<i>(planned station)</i>" :
-                      //if we have don't have sponsorship info:....
-                      '<div class="station-data">' +
-                        '<b>Available Bikes: </b>' + destinationStation.availableBikes + '<br>' +
-                        '<b>Available Docks: </b>' + destinationStation.availableDocks + '<br>' +
-                      '</div>'
-                    ) +
-                  '</div>';
-
-  // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
-  var div = document.createElement('div');
-  div.innerHTML = contentString;
-
-  // Set the content in the infowindow
-  stationInfoWindow.setContent(div);
-
-  // Open the InfoWindow
-  stationInfoWindow.open(map, marker2);
-
-  });
-}
-
-function showFirstWalkMarkers(directionResult, startAddress) {
-
-  var stationInfoWindow = new google.maps.InfoWindow({});
-
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-    // var assetPath = "<%= asset_path 'stations/map-icons.png' %>";
-    
-    var icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=A|FFFFFF|000000';
-
-    if (i == 0) {
-    // Icon as start position
-    // icon = "https://chart.googleapis.com/chart?chst=d_map_xpin_icon&chld=pin_star|car-dealer|00FFFF|FF0000";
-    var marker = new google.maps.Marker({
-      position: myRoute.steps[i].start_point,
-      map: map,
-      icon: icon
-    });
-
-    // Create an Event Listener that pops up the infoWindow when a user clicks a station
-    google.maps.event.addListener(marker, 'click', function() {
-      contentString = '<div class="station-window"  style="width: 20%, margin: 0">' +
-                        // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-                        '<h2 class="temp-padding" style="padding-right: 1.5em">' + startAddress + '</h2>' +
-                        // if the station is planned, put up a small message saying it is planned, if not, put the table up
-                        
-                        '<table id="station-table">' +
-                        '</table>'  +
-                      '</div>';
-
-                // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
-                var div = document.createElement('div');
-                div.innerHTML = contentString;
-
-                // Set the content in the infowindow
-                stationInfoWindow.setContent(div);
-
-                // Open the InfoWindow
-                stationInfoWindow.open(map, marker);
-
-
-                // End of infowindow domready event listener
-              });
-    }
-  // attachInstructionText(marker, myRoute.steps[i].instructions);
-  // markerArray.push(marker);
+  generateStationContent: function(station) {
+    return  '<div class="station-window">' +
+              // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
+              '<h2 class="temp-padding" style="margin: 0">' + station.stationName + '</h2>' +
+              // if the station is planned, put up a small message saying it is planned, if not, put the table up
+              (station.statusValue == 'Planned' ? "<i>(planned station)</i>" :
+                //if we have don't have sponsorship info:....
+                '<div class="station-data">' +
+                  '<b>Available Bikes: </b>' + station.availableBikes + '<br>' +
+                  '<b>Available Docks: </b>' + station.availableDocks + '<br>' +
+                '</div>'
+              ) +
+            '</div>';
   }
 
-}
-
-function showSecondWalkMarkers(directionResult, destination) {
-
-  var stationInfoWindow = new google.maps.InfoWindow({});
-
-  var myRoute = directionResult.routes[0].legs[0];
-
-  for (var i = 0; i < myRoute.steps.length; i++) {
-    var icon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=B|FFFFFF|000000';
-
-    if (i == myRoute.steps.length-1) {
-    // Icon as start position
-    var marker = new google.maps.Marker({
-      position: myRoute.steps[i].start_point,
-      map: map,
-      icon: icon
-    });
-      // Create an Event Listener that pops up the infoWindow when a user clicks a station
-      google.maps.event.addListener(marker, 'click', function() {
-        contentString = '<div class="station-window" style="width: 20%, margin: 0">' +
-                          // Sets a temporary padding, this helps the station name stay on all one line. Google maps doesn't like the text-transform:uppercase without this
-                          '<h2 class="temp-padding" style="padding-right: 1.5em">' + destination + '</h2>' +
-                            // if the station is planned, put up a small message saying it is planned, if not, put the table up
-                            
-                          '<table id="station-table">' +
-                          '</table>'  +
-                        '</div>';
-
-                // This code helps prevent scroll-bars. Create an element, put the content in the element, then put the element in the window (below)
-                var div = document.createElement('div');
-                div.innerHTML = contentString;
-
-                // Set the content in the infowindow
-                stationInfoWindow.setContent(div);
-
-                // Open the InfoWindow
-                stationInfoWindow.open(map, marker);
-
-                // End of infowindow domready event listener
-              });
-    }
-
-  }
-
-}
-
-function sprite_offset(bikes,docks) {
-  var index_offset;
-
-  // Only if the station is not reporting 0 bikes and 0 docks
-  if (!(bikes === 0 && docks === 0)) {
-    var percent=Math.round(bikes/(bikes+docks)*100);
-
-    // Use the empty icon only for empty stations, ditto for full. Anything in-between, show different icon
-    if (percent === 0)
-      index_offset = 0;
-    else if (percent > 0 && percent <= 33)
-      index_offset = 1;
-    else if (percent > 33 && percent < 67)
-      index_offset = 2;
-    else if (percent >= 67 && percent < 100)
-      index_offset = 3;
-    else if (percent == 100)
-      index_offset = 4;
-  }
-
-  var offset = index_offset * (53 + 50); // 53 the height of the pin portion of the image, 50 the whitespace b/t the pin portions
-  return offset;
-}
+};
 
 $(document).ready(function() {
-
-  $('form').on('submit', function(e) {
-    e.preventDefault();
-
-    var starting = $("input[id='s']").val();
-    var destination = $("input[id='d']").val();
-
-    $('.index').remove();
-
-    var ajaxRequest = $.ajax({
-      url: '/search/map',
-      type: 'GET',
-      data: {s: starting, d: destination}
-    });
-
-    ajaxRequest.done(function(response) {
-      var mapData = response;
-      initialize(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
-    });
-
-  });
-
+  BikeMap.init();
 });
