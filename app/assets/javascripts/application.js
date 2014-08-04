@@ -12,13 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-<<<<<<< HEAD
 //= require underscore
+//= require_tree .
 
-//= require_tree .
-=======
-//= require turbolinks
-//= require_tree .
-//= require underscore
-//= require gmaps/google
->>>>>>> 4f44b1da3e534122388c09e154ab5d4883c2c7a0
