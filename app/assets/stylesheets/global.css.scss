@@ -1,13 +1,17 @@
 @import 'styles.css.scss';
 
-body {
+body, html {
   margin: 0;
   background-color: $body-color;
-  height: 40em;
+  height: 100%;
 }
 
 * {
   font-family: 'Droid Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizelegibility;
+  -webkit-box-sizing: border-box; 
+  -moz-box-sizing: border-box;    
+  box-sizing: border-box;
+  outline: none;  
 }

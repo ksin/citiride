@@ -11,6 +11,7 @@ var BikeMap = {
       var destination = $("input[id='d']").val();
 
       $('.index').remove();
+      $('body').append("<div id='map'></div>");
 
       var ajaxRequest = $.ajax({
         url: '/search/map',
