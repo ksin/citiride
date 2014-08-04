@@ -4,9 +4,9 @@
     <div class="search">
       <%= form_tag do %>
 
-        <%= text_field_tag 's', nil, placeholder: "Starting point" %>
+        <%= text_field_tag 's', nil, placeholder: "Starting point", id: 's' %>
 
-        <%= text_field_tag 'd', nil, placeholder: "Destination" %>
+        <%= text_field_tag 'd', nil, placeholder: "Destination", id: 'd' %>
 
         <%= submit_tag "Ride!" %>
 
