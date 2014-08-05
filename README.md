@@ -7,7 +7,7 @@ This app combines constantly-updated CitiBike station map information with Googl
 
 ### Purpose
 
-Mobile first. We aim to make this useful to anyone in the city who doesn't want to download some apps onto their phone just to get from one place to another. They should be able to easily this kind of information with their phone's built-in browser. 
+Mobile first. We aim to make this useful to anyone in the city who doesn't want to download some apps onto their phone just to get from one place to another. One should be able to easily get this kind of information with a phone's built-in browser. 
 
 If at least one person found this app useful and not as annoying as downloading some apps onto their phone to ride a CitiBike, then citiride has achieved its purpose.
 
