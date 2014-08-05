@@ -62,6 +62,12 @@
 
     }
 
+    .error {
+      color: $error-color;
+      text-align: center;
+      margin-top: 2em;
+    }
+
   }
 
 }

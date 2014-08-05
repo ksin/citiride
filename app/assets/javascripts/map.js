@@ -2,33 +2,57 @@ var BikeMap = {
 
   init: function() {
 
-    // binds map rendering to form submit
+    // bind data fetching and map rendering to form submit
     $('form').on('submit', function(e) {
 
       e.preventDefault();
+      // clear the page of any errors first
+      $('.error').remove();
 
       var starting = $("input[id='s']").val();
       var destination = $("input[id='d']").val();
 
-      $('.index').remove();
-      $('body').append("<div id='map'></div>");
+      // if starting and destination have values, then proceed. otherwise tell user to fill them both in
+      if (starting && destination) {
+        this.fetch(starting, destination);
 
-      var ajaxRequest = $.ajax({
-        url: '/search/map',
-        type: 'GET',
-        data: {s: starting, d: destination}
-      });
+      } else {
+        var errorMsg =  "<h2 class='error'>You need an address for both the starting point and the destination.</h2>";
+        $(errorMsg).hide().appendTo(".container").fadeIn(1000);
 
-      ajaxRequest.done(function(mapData) {
-        console.log(mapData);
+      }
+
+    }.bind(this));
+
+  },
+
+  fetch: function(starting, destination) {
+
+    var ajaxRequest = $.ajax({
+      url: '/search/map',
+      type: 'GET',
+      data: {s: starting, d: destination}
+    });
+
+    ajaxRequest.done(function(mapData) {
+      // if server does not verify that addresses are in New York, show error message.
+      // otherwise, render the map with mapData.
+      if (mapData.inNewYork === false) {
+        var errorMsg =  "<h2 class='error'>CitiBike is only available in New York City. Please enter valid NYC addresses.</h2>";
+        $(errorMsg).hide().appendTo(".container").fadeIn(1000);
+      
+      } else {
         this.render(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
-      }.bind(this));
+
+      }
 
     }.bind(this));
 
   },
 
   render: function(coords, addresses, startStation, destinationStation) {
+    $('.index').remove();
+    $('body').append("<div id='map'></div>");
 
     // renders map with center latitude and longitude being the average of 
     // the starting point and the destination point

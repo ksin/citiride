@@ -1,14 +1,32 @@
 module ApplicationHelper
+
   def create_map_data(start, destination)
     start_coords = find_coords(start)
     destination_coords = find_coords(destination)
 
+    # check that both addresses are in New York
+    if (verify_new_york(start_coords) && verify_new_york(destination_coords))
+      generate_map_json(start, destination, start_coords, destination_coords)
+    else
+      { inNewYork: false }
+    end
+
+  end
+
+  def verify_new_york(coords)
+    coords[0] <= 40.91757700 &&
+    coords[0] >= 40.47739900 &&
+    coords[1] >= -74.2590900 &&
+    coords[1] <= -73.70027200
+  end
+
+  def generate_map_json(start, destination, start_coords, destination_coords)
     addresses = [start, destination]
     start_station_data = find_closest(coords: start_coords, looking_for: "availableBikes")
     destination_station_data = find_closest(coords: destination_coords, looking_for: "availableDocks")
     map_points = map_points(start_coords, destination_coords, start_station_data, destination_station_data)
 
-    { 
+    {
       addresses: addresses, 
       startStation: start_station_data, 
       destinationStation: destination_station_data, 
