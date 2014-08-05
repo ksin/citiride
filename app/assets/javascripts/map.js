@@ -42,6 +42,8 @@ var BikeMap = {
         $(errorMsg).hide().appendTo(".container").fadeIn(1000);
       
       } else {
+        $('.index').remove();
+        $('body').append("<div id='map'></div>");
         this.render(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
 
       }
@@ -51,8 +53,6 @@ var BikeMap = {
   },
 
   render: function(coords, addresses, startStation, destinationStation) {
-    $('.index').remove();
-    $('body').append("<div id='map'></div>");
 
     // renders map with center latitude and longitude being the average of 
     // the starting point and the destination point
