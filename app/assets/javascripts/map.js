@@ -20,6 +20,7 @@ var BikeMap = {
       });
 
       ajaxRequest.done(function(mapData) {
+        console.log(mapData);
         this.render(mapData.mapPoints, mapData.addresses, mapData.startStation, mapData.destinationStation);
       }.bind(this));
 

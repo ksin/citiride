@@ -13,8 +13,8 @@ var AutoComplete = {
       componentRestrictions: {country: 'us'}
     });
 
-    new google.maps.places.Autocomplete(inputS, options);
-    new google.maps.places.Autocomplete(inputD, options);
+    this.autocompleteS = new google.maps.places.Autocomplete(inputS, options);
+    this.autocompleteD = new google.maps.places.Autocomplete(inputD, options);
 
     this.geolocate();
   },
@@ -26,9 +26,11 @@ var AutoComplete = {
       navigator.geolocation.getCurrentPosition(function(position) {
         var geolocation = new google.maps.LatLng(
             position.coords.latitude, position.coords.longitude);
-        autocomplete.setBounds(new google.maps.LatLngBounds(geolocation,
+        this.autocompleteS.setBounds(new google.maps.LatLngBounds(geolocation,
             geolocation));
-      });
+        this.autocompleteD.setBounds(new google.maps.LatLngBounds(geolocation,
+            geolocation));
+      }.bind(this));
     }
   }
 
